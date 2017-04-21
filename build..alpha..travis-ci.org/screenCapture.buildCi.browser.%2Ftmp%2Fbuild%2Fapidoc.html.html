@@ -1,0 +1,182 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a>bespoke (v1.1.0)</a>
+</h1>
+<h4>DIY Presentation Micro-Framework</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.bespoke">module bespoke</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.bespoke.from">
+            function <span class="apidocSignatureSpan">bespoke.</span>from
+            <span class="apidocSignatureSpan">(opts, plugins)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.bespoke" id="apidoc.module.bespoke">module bespoke</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.bespoke.from" id="apidoc.element.bespoke.from">
+        function <span class="apidocSignatureSpan">bespoke.</span>from
+        <span class="apidocSignatureSpan">(opts, plugins)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">from = function (opts, plugins) {
+  var parent = (opts.parent || opts).nodeType === 1 ? (opts.parent || opts) : document.querySelector(opts.parent || opts),
+    slides = [].filter.call(typeof opts.slides === 'string' ? parent.querySelectorAll(opts.slides) : (opts.slides || parent.children
+), function(el) { return el.nodeName !== 'SCRIPT'; }),
+    activeSlide = slides[0],
+    listeners = {},
+
+    activate = function(index, customData) {
+      if (!slides[index]) {
+        return;
+      }
+
+      fire('deactivate', createEventData(activeSlide, customData));
+      activeSlide = slides[index];
+      fire('activate', createEventData(activeSlide, customData));
+    },
+
+    slide = function(index, customData) {
+      if (arguments.length) {
+        fire('slide', createEventData(slides[index], customData)) &amp;&amp; activate(index, customData);
+      } else {
+        return slides.indexOf(activeSlide);
+      }
+    },
+
+    step = function(offset, customData) {
+      var slideIndex = slides.indexOf(activeSlide) + offset;
+
+      fire(offset &gt; 0 ? 'next' : 'prev', createEventData(activeSlide, customData)) &amp;&amp; activate(slideIndex, customData);
+    },
+
+    on = function(eventName, callback) {
+      (listeners[eventName] || (listeners[eventName] = [])).push(callback);
+      return off.bind(null, eventName, callback);
+    },
+
+    off = function(eventName, callback) {
+      listeners[eventName] = (listeners[eventName] || []).filter(function(listener) { return listener !== callback; });
+    },
+
+    fire = function(eventName, eventData) {
+      return (listeners[eventName] || [])
+        .reduce(function(notCancelled, callback) {
+          return notCancelled &amp;&amp; callback(eventData) !== false;
+        }, true);
+    },
+
+    createEventData = function(el, eventData) {
+      eventData = eventData || {};
+      eventData.index = slides.indexOf(el);
+      eventData.slide = el;
+      return eventData;
+    },
+
+    deck = {
+      on: on,
+      off: off,
+      fire: fire,
+      slide: slide,
+      next: step.bind(null, 1),
+      prev: step.bind(null, -1),
+      parent: parent,
+      slides: slides
+    };
+
+  (plugins || []).forEach(function(plugin) {
+    plugin(deck);
+  });
+
+  activate(0);
+
+  return deck;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+```
+
+#### JavaScript
+
+To create a new presentation, Bespoke.js provides the `from(selector[, plugins])` method, which takes a selector or element reference
+ and an array of [plugins](#plugins), and returns a [deck instance](#deck-instances).
+
+```js
+var deck = bespoke.<span class="apidocCodeKeywordSpan">from</span>('#presentation', [plugins]);
+
+// Next slide
+deck.next();
+
+// Previous slide
+deck.prev();
+...</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
